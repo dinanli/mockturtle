@@ -89,8 +89,15 @@ public:
 
     _st.rounds = std::pow(2, n - _st.split_var );
 
+    std::cout << "pis and nodes: " << _ntk.num_pis() << " " << _ntk.num_gates() << std::endl;
+    std::cout << "spitting_vars: " << _st.split_var << std::endl;
+    std::cout << "rounds: " << _st.rounds << std::endl;
+
     return false;
   }
+
+  // deriving patterns
+
 
 private:
   /* you can add additional methods here */
