@@ -268,7 +268,7 @@ NtkDest cleanup_dangling( NtkSrc const& ntk )
   std::vector<signal<NtkDest>> pis;
   ntk.foreach_pi( [&]( auto ) {
     pis.push_back( dest.create_pi() );
-  } );
+  } ); // record all the primiary inputs of ntk in pis
 
   for ( auto f : cleanup_dangling( ntk, dest, pis.begin(), pis.end() ) )
   {

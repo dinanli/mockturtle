@@ -74,14 +74,26 @@ public:
   bool run()
   {
     /* TODO: write your implementation here */
-    // a simple test
+    // computing splitting_var and rounds
+    auto n = _ntk.num_pis();
+    if ( n <= 6 )
+    {
+      _st.split_var = n;
+    }
+    else
+    {
+      auto V = _ntk.num_gates();
+      int max_m = std::log2l( std::pow(2, 29)/ V - 32 ) + 3;
+      _st.split_var = max_m > n ? n : max_m;
+    }
+
+    _st.rounds = std::pow(2, n - _st.split_var );
+
     return false;
   }
 
 private:
   /* you can add additional methods here */
-
-private:
   Ntk& _ntk;
   simulation_cec_stats& _st;
   /* you can add other attributes here */
