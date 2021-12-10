@@ -58,7 +58,7 @@ struct dynamic_truth_table
     \param num_vars Number of variables
   */
   explicit dynamic_truth_table( uint32_t num_vars )
-      : _bits( ( num_vars <= 6 ) ? 1u : ( 1u << ( num_vars - 6 ) ) ),
+      : _bits( ( num_vars <= 6 ) ? 1u : ( 1u << ( num_vars - 6 ) ) ),  // when variable size < 6, store in one block
         _num_vars( num_vars )
   {
   }

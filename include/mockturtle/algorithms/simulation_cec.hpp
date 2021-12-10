@@ -40,6 +40,8 @@
 #include "miter.hpp"
 #include "simulation.hpp"
 
+#include <bitset> // used for printing
+
 namespace mockturtle
 {
 
@@ -92,6 +94,20 @@ public:
     std::cout << "pis and nodes: " << _ntk.num_pis() << " " << _ntk.num_gates() << std::endl;
     std::cout << "spitting_vars: " << _st.split_var << std::endl;
     std::cout << "rounds: " << _st.rounds << std::endl;
+
+    kitty::dynamic_truth_table pattern( n );
+    std::cout << "truth table number of variables: " << pattern.num_vars() << std::endl
+              << "number of blocks: " << pattern.num_blocks() << std::endl
+              << "number of bits: " << pattern.num_bits() << std::endl;
+
+
+    for (auto i = 0; i < n; i ++)
+    {
+      kitty::create_nth_var( pattern, i );
+    }
+
+    std::bitset<64> x( pattern._bits[0] );
+    std::cout << x << std::endl;
 
     return false;
   }
