@@ -150,7 +150,8 @@ void create_nth_var( TT& tt, uint8_t var_index, bool complement = false )
 
 /*! \cond PRIVATE */
 template<uint32_t NumVars>
-void create_nth_var( static_truth_table<NumVars, true>& tt, uint8_t var_index, bool complement = false )
+void create_nth_var( static_truth_table<NumVars, true>& tt, uint8_t var_index, bool complement = false ) 
+// cast to static truth table, can only have up to six varialbes
 {
   /* assign from precomputed table */
   tt._bits = complement ? ~detail::projections[var_index] : detail::projections[var_index];
