@@ -43,8 +43,8 @@ namespace detail
 {
 
 static constexpr uint64_t projections[] = {
-    UINT64_C( 0xaaaaaaaaaaaaaaaa ),
-    UINT64_C( 0xcccccccccccccccc ),
+    UINT64_C( 0xaaaaaaaaaaaaaaaa ), // 10101010...
+    UINT64_C( 0xcccccccccccccccc ), // 11001100...
     UINT64_C( 0xf0f0f0f0f0f0f0f0 ),
     UINT64_C( 0xff00ff00ff00ff00 ),
     UINT64_C( 0xffff0000ffff0000 ),

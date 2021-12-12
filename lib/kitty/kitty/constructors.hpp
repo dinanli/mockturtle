@@ -109,7 +109,7 @@ void create_nth_var( TT& tt, uint8_t var_index, bool complement = false )
       tt.mask_bits();
       return;
     }
-  }
+  } // if partial_truth_table
   else
   {
     if ( tt.num_vars() <= 6 )
@@ -123,13 +123,13 @@ void create_nth_var( TT& tt, uint8_t var_index, bool complement = false )
     }
   }
 
-  if ( var_index < 6 )
-  {
+  if ( var_index < 6 ) // if index smaller than six 
+  { // fill in all the bits with the same projection
     std::fill( std::begin( tt._bits ), std::end( tt._bits ), complement ? ~detail::projections[var_index] : detail::projections[var_index] );
   }
-  else
+  else 
   {
-    const auto c = 1 << ( var_index - 6 );
+    const auto c = 1 << ( var_index - 6 ); // var_index 7, c 2
     const auto zero = uint64_t( 0 );
     const auto one = ~zero;
     auto block = uint64_t( 0u );

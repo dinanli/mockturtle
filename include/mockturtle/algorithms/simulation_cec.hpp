@@ -95,21 +95,29 @@ public:
     std::cout << "spitting_vars: " << _st.split_var << std::endl;
     std::cout << "rounds: " << _st.rounds << std::endl;
 
+    // create the pattern with truth table
+
     kitty::dynamic_truth_table pattern( n );
     std::cout << "truth table number of variables: " << pattern.num_vars() << std::endl
               << "number of blocks: " << pattern.num_blocks() << std::endl
               << "number of bits: " << pattern.num_bits() << std::endl;
 
-
-    for (auto i = 0; i < n; i ++)
+    for ( auto i = 0; i < _st.rounds; i++ )
     {
-      kitty::create_nth_var( pattern, i );
+      std::cout << "[running] round " << i << std::endl;
+      default_simulator<kitty::dynamic_truth_table> sim( n, _st.split_var, i, true );
+      auto res = simulate<kitty::dynamic_truth_table, Ntk>( _ntk, sim );
+
+      for ( auto& po : res )
+      {
+        if ( !kitty::is_const0( po ) )
+        {
+          return false;
+        }
+      }
     }
 
-    std::bitset<64> x( pattern._bits[0] );
-    std::cout << x << std::endl;
-
-    return false;
+    return true;
   }
 
   // deriving patterns
