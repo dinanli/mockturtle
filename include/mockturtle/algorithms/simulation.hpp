@@ -111,8 +111,7 @@ class default_simulator<kitty::dynamic_truth_table>
 {
 public:
   default_simulator() = delete;
-  default_simulator( unsigned num_vars, uint32_t split_var = 0, uint32_t round = 0, bool isMiter = false ) : num_vars( num_vars ), split_var(split_var),
-  round(round), isMiter(isMiter){}
+  default_simulator( unsigned num_vars) : num_vars( num_vars ){}
 
   kitty::dynamic_truth_table compute_constant( bool value ) const
   {
@@ -122,30 +121,11 @@ public:
 
   kitty::dynamic_truth_table compute_pi( uint32_t index ) const
   {
-    if ( !isMiter )
-    {
         kitty::dynamic_truth_table tt( num_vars );
         kitty::create_nth_var( tt, index );
         return tt;
-    }
-    else
-    {
-      kitty::dynamic_truth_table tt( num_vars );
-      if ( index < split_var )
-      {
-        kitty::create_nth_var( tt, index );
-      }
-      else
-      {
-        bool flag = round >> ( index - split_var ) & 1;
-        if ( flag )
-        {
-          tt = ~tt;
-        }
-      }
-      return tt;
-    }
-  }
+   }
+   
 
   kitty::dynamic_truth_table compute_not( kitty::dynamic_truth_table const& value ) const
   {
@@ -545,7 +525,6 @@ node_map<SimulationType, Ntk> simulate_nodes( Ntk const& ntk, Simulator const& s
     } );
     node_to_value[n] = ntk.compute( n, fanin_values.begin(), fanin_values.end() );
   } );
-
   return node_to_value;
 }
 

@@ -58,6 +58,46 @@ struct simulation_cec_stats
 namespace detail
 {
 
+class cec_simulator
+{
+public:
+    cec_simulator(unsigned num_vars, uint32_t split_var, uint32_t round) : num_vars( num_vars ), split_var(split_var),
+  round(round) {}
+
+    kitty::dynamic_truth_table compute_constant( bool value ) const
+    {
+      kitty::dynamic_truth_table tt( split_var );
+      return value ? ~tt : tt;
+    }
+
+    kitty::dynamic_truth_table compute_pi( uint32_t index ) const
+    {
+      kitty::dynamic_truth_table tt( split_var );
+      if ( index < split_var )
+      {
+        kitty::create_nth_var( tt, index );
+      }
+      else{
+            bool flag = round >> ( index - split_var ) & 1;
+            if ( !flag )
+            {
+            tt = ~tt;
+            }
+        }
+        return tt;
+    }
+
+    kitty::dynamic_truth_table compute_not( kitty::dynamic_truth_table const& value ) const
+    {
+      return ~value;
+    }
+
+private:
+    unsigned int num_vars;
+    uint32_t round, split_var;
+};
+
+
 template<class Ntk>
 class simulation_cec_impl
 {
@@ -77,36 +117,14 @@ public:
   {
     /* TODO: write your implementation here */
     // computing splitting_var and rounds
-    auto n = _ntk.num_pis();
-    if ( n <= 6 )
-    {
-      _st.split_var = n;
-    }
-    else
-    {
-      auto V = _ntk.num_gates();
-      int max_m = std::log2l( std::pow(2, 29)/ V - 32 ) + 3;
-      _st.split_var = max_m > n ? n : max_m;
-    }
-
-    _st.rounds = std::pow(2, n - _st.split_var );
-
-    std::cout << "pis and nodes: " << _ntk.num_pis() << " " << _ntk.num_gates() << std::endl;
-    std::cout << "spitting_vars: " << _st.split_var << std::endl;
-    std::cout << "rounds: " << _st.rounds << std::endl;
-
+    gen_st();
     // create the pattern with truth table
-
-    kitty::dynamic_truth_table pattern( n );
-    std::cout << "truth table number of variables: " << pattern.num_vars() << std::endl
-              << "number of blocks: " << pattern.num_blocks() << std::endl
-              << "number of bits: " << pattern.num_bits() << std::endl;
 
     for ( auto i = 0; i < _st.rounds; i++ )
     {
       std::cout << "[running] round " << i << std::endl;
-      default_simulator<kitty::dynamic_truth_table> sim( n, _st.split_var, i, true );
-      auto res = simulate<kitty::dynamic_truth_table, Ntk>( _ntk, sim );
+      cec_simulator sim( _ntk.num_pis(), _st.split_var, i );
+      const std::vector<kitty::dynamic_truth_table> res = simulate<kitty::dynamic_truth_table>( _ntk, sim );
 
       for ( auto& po : res )
       {
@@ -115,19 +133,31 @@ public:
           return false;
         }
       }
+      return true;
     }
-
-    return true;
   }
-
-  // deriving patterns
-
-
 private:
   /* you can add additional methods here */
   Ntk& _ntk;
   simulation_cec_stats& _st;
   /* you can add other attributes here */
+
+  void gen_st()
+  {
+    auto n = _ntk.num_pis();
+    if ( n <= 6 )
+    {
+      _st.split_var = n;
+    }
+    else
+    {
+      auto v = _ntk.size();
+      int max_m = std::log2l( std::pow( 2, 29 ) / v - 32 ) + 3;
+      _st.split_var = max_m > n ? n : max_m;
+    }
+
+    _st.rounds = std::pow( 2, n - _st.split_var );
+  }
 };
 
 } // namespace detail
